@@ -1,0 +1,40 @@
+version: '3.8' # Versión de la especificación de Docker Compose
+
+services:
+  # Servicio de la aplicación Spring Boot
+  app:
+    build:
+      context: . # El contexto de construcción es el directorio actual donde está el Dockerfile
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080" # Mapea el puerto 8080 del host al 8080 del contenedor
+    depends_on:
+      - db # Asegura que la base de datos se inicie antes que la aplicación
+    environment:
+      # Variables de entorno para la conexión a la base de datos
+      # Estas deben coincidir con tu configuración de la base de datos en el servicio 'db'
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/urban_transport_db?useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: root # Basado en tu MYSQL_ROOT_PASSWORD
+      SPRING_DATASOURCE_PASSWORD: admin # Basado en tu MYSQL_ROOT_PASSWORD
+      # Propiedades para tu JWT secret y expiración
+      # Se recomienda usar un archivo .env o variables de entorno del sistema para JWT_SECRET en producción
+      JWT_SECRET: ${JWT_SECRET:-ProyectoTransporteUrbanoProyectoTransporteUrbanoProyectoTransporteUrbano} # Lee de .env o usa valor por defecto
+      JWT_EXPIRATION: 3600000 # 1 hora en milisegundos
+
+  # Servicio de la base de datos MySQL
+  db:
+    image: mysql:8.0 # O la versión de MySQL que prefieras (ej. mysql:latest)
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: admin # Esta es la contraseña para el usuario 'root'
+      MYSQL_DATABASE: urban_transport_db # El nombre de tu base de datos
+      # MYSQL_USER: root # Si no se especifica, el usuario por defecto es 'root'
+      # MYSQL_PASSWORD: admin # La contraseña para el usuario 'root'
+    ports:
+      - "3306:3306" # Mapea el puerto 3306 del contenedor al 3306 de tu máquina local
+    volumes:
+      - mysql_data:/var/lib/mysql # Persistencia de datos
+
+# Volúmenes para la persistencia de datos de la base de datos
+volumes:
+  mysql_data:
