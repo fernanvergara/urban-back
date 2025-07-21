@@ -92,6 +92,12 @@ public class ConductorServiceImpl implements ConductorService {
 
     @Override
     @Transactional(readOnly = true)
+    public Optional<Conductor> obtenerConductorPorIdentificacion(String identificacion) {
+        return conductorRepository.findByIdentificacion(identificacion);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<Conductor> obtenerTodosLosConductores() {
         return conductorRepository.findAll();
     }

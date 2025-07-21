@@ -73,6 +73,18 @@ public class ConductorController {
                 .orElseThrow(() -> new EntityNotFoundException("Conductor no encontrado con ID: " + id));
     }
 
+    @GetMapping("/ident/{identificacion}")
+    @Operation(summary = "Obtener conductor por Identificación", description = "Retorna un conductor específico por su Identificación.")
+    @ApiResponse(responseCode = "200", description = "Conductor encontrado")
+    @ApiResponse(responseCode = "404", description = "Conductor no encontrado")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('CONDUCTOR') and @securityUtils.isConductorIdLinkedToCurrentUser(#id))")
+    public ResponseEntity<Conductor> obtenerConductorPorIdentificacion(@PathVariable String identificacion) {
+        // EntityNotFoundException será capturada por el GlobalExceptionHandler
+        return conductorService.obtenerConductorPorIdentificacion(identificacion)
+                .map(conductor -> new ResponseEntity<>(conductor, HttpStatus.OK))
+                .orElseThrow(() -> new EntityNotFoundException("Conductor no encontrado con Identificación: " + identificacion));
+    }
+
     @PostMapping
     @Operation(summary = "Crear un nuevo conductor", description = "Crea un nuevo conductor en la base de datos.")
     @ApiResponse(responseCode = "201", description = "Conductor creado exitosamente")

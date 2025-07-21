@@ -45,6 +45,17 @@ public interface ConductorService {
             @Parameter(description = "ID del conductor a buscar", example = "1") Long id
     );
 
+    @Operation(summary = "Obtiene un conductor por su Identificación",
+               description = "Busca y retorna un conductor específico por su número Identificación.",
+               responses = {
+                   @ApiResponse(responseCode = "200", description = "Conductor encontrado exitosamente",
+                                content = @Content(mediaType = "application/json", schema = @Schema(implementation = Conductor.class))),
+                   @ApiResponse(responseCode = "404", description = "Conductor no encontrado")
+               })
+    Optional<Conductor> obtenerConductorPorIdentificacion(
+            @Parameter(description = "Identificación del conductor a buscar", example = "1234567890") String identificacion
+    );
+
     @Operation(summary = "Obtiene todos los conductores",
                description = "Retorna una lista de todos los conductores registrados en el sistema.",
                responses = {

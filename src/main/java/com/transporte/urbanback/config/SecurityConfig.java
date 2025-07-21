@@ -69,7 +69,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         // Permite orígenes específicos. En producción, esto debería ser el dominio de tu frontend.
         // Para desarrollo, puedes usar "*" o "http://localhost:XXXX"
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:8080")); // Ejemplo: tu frontend React/Angular
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000", "http://localhost:4200", "http://localhost:8080")); // Ejemplo: el frontend React/Angular
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Accept", "X-Requested-With"));
         configuration.setAllowCredentials(true); // Permite el envío de cookies y encabezados de autorización
@@ -87,7 +87,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .exceptionHandling(exception -> exception.authenticationEntryPoint(jwtAuthenticationEntryPoint))         
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/auth/**",
+                .requestMatchers("/api/v1/auth/**",
                                  "/v2/api-docs",
                                  "/v3/api-docs/**",
                                  "/swagger-resources/**",

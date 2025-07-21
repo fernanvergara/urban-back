@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +29,18 @@ public class UsuarioServiceImpl implements UsuarioService {
         this.usuarioRepository = usuarioRepository;
         this.conductorRepository = conductorRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Usuario> obtenerTodosLosUsuarios() {
+        return usuarioRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Usuario> obtenerUsuarioPorId(Long id) {
+        return usuarioRepository.findById(id);
     }
 
     @Override
@@ -78,5 +92,28 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Transactional
     public Usuario guardarUsuario(Usuario usuario) {
         return usuarioRepository.save(usuario);
+    }
+
+    @Override
+    @Transactional
+    public Usuario cambiarEstadoUsuario(Long id, boolean nuevoEstado) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con ID: " + id)); 
+
+        if (usuario.getActivo() != nuevoEstado) {
+            int updatedRows = usuarioRepository.updateActivoStatus(id, nuevoEstado);
+            if (updatedRows > 0) {
+                usuario.setActivo(nuevoEstado); 
+                return usuario;
+            } else {
+                throw new IllegalStateException("No se pudo actualizar el estado del usuario con ID: " + id); 
+            }
+        }
+        return usuario; 
+    }
+
+    @Override
+    public List<Rol> obtenerTodosLosRoles() {
+        return Arrays.asList(Rol.values());
     }
 }
